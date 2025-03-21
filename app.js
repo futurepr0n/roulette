@@ -54,29 +54,37 @@ const rouletteSequence = [
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
 ];
 
-// Create number texture for slots
+// Create number texture for slots with transparent background
 function createNumberTexture(number, color) {
     const canvas = document.createElement('canvas');
-    canvas.width = 256;  // Increase from 128
-    canvas.height = 256; // Increase from 128
+    canvas.width = 512;
+    canvas.height = 512;
     const ctx = canvas.getContext('2d');
 
-    ctx.clearRect(0, 0, 256, 256);
-    ctx.fillStyle = color;
+    // Clear the canvas
+    ctx.clearRect(0, 0, 512, 512);
+    
+    // We'll create a transparent background to hide the circle
+    ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.beginPath();
-    ctx.arc(128, 128, 120, 0, Math.PI * 2); // Adjust for larger canvas
+    ctx.arc(256, 256, 240, 0, Math.PI * 2);
     ctx.fill();
-
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
+    
+    // Draw the number with high visibility
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 128px Arial'; // Increase from 64px
+    ctx.font = 'bold 280px Arial'; // Larger font
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(number.toString(), 128, 128);
-
+    
+    // Add strong dropshadow for better contrast against any background
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 5;
+    ctx.shadowOffsetY = 5;
+    
+    // Draw the number in the center
+    ctx.fillText(number.toString(), 256, 256);
+    
     return new THREE.CanvasTexture(canvas);
 }
 
@@ -150,22 +158,29 @@ for (let i = 0; i < slotCount; i++) {
     
     slotGroup.add(slot);
     
-    // Create number plate at the outer edge of each slot
+    // Create number plate for each slot with transparent background
     const numberTexture = createNumberTexture(number, colorName);
-    const plateGeometry = new THREE.CircleGeometry(0.25, 32);
+    const plateGeometry = new THREE.PlaneGeometry(0.4, 0.4); // Using plane instead of circle
     const plateMaterial = new THREE.MeshBasicMaterial({ 
         map: numberTexture,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        transparent: true,
+        depthWrite: false // This helps with rendering order issues
     });
-    
+
     const numberPlate = new THREE.Mesh(plateGeometry, plateMaterial);
-    
-    // Position at the outer edge of the slot
-    numberPlate.position.set(0, 0.16, -(outerRadius - 0.3)); // Change from 0.2 to 0.3
-    numberPlate.rotation.x = -Math.PI / 2; // Face upward
-    
-    
+
+    // Position the plate to be more visible from default camera angle
+    // Raise it higher above the slot and position it toward the outer edge
+    numberPlate.position.set(0, 0.25, -(outerRadius - 0.3));
+    // Angle it to face more toward the camera
+    numberPlate.rotation.x = -Math.PI / 3;
+
     slotGroup.add(numberPlate);
+    
+    // Also add the roulette number to the slot's userData for reference
+    slot.userData = { number: number };
+    
     wheelGroup.add(slotGroup);
 }
 
@@ -238,6 +253,20 @@ const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 ball.position.set(slotRadius, 0.3, 0);
 ball.castShadow = true;
 scene.add(ball);
+
+// Create a highlight ring for the winning slot
+const highlightGeometry = new THREE.RingGeometry(0.2, 0.3, 32);
+const highlightMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0xFFFF00, // Bright yellow
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.7
+});
+const winningHighlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+winningHighlight.rotation.x = -Math.PI / 2; // Make it horizontal
+winningHighlight.position.y = slotHeight + 0.02; // Just above the slot
+winningHighlight.visible = false; // Hidden by default
+scene.add(winningHighlight);
 
 // Add a floor under the wheel
 const floorGeometry = new THREE.PlaneGeometry(20, 20);
@@ -336,6 +365,15 @@ function animate() {
         ball.position.x = slotRadius * Math.cos(winningSlotAngle);
         ball.position.y = slotHeight + 0.1;
         ball.position.z = slotRadius * Math.sin(winningSlotAngle);
+        
+        // Position the highlight ring at the ball's position
+        winningHighlight.position.x = ball.position.x;
+        winningHighlight.position.z = ball.position.z;
+        winningHighlight.visible = true;
+        
+        // Pulse effect for the highlight
+        const pulseScale = 1 + 0.2 * Math.sin(Date.now() * 0.005);
+        winningHighlight.scale.set(pulseScale, pulseScale, 1);
     }
 
     renderer.render(scene, camera);
@@ -347,7 +385,10 @@ animate();
 // Spin button functionality
 document.getElementById('spin-button').addEventListener('click', () => {
     if (!isSpinning) {
-        // Reset winning number highlight
+        // Hide the winning highlight
+        winningHighlight.visible = false;
+        
+        // Reset winning number highlight in betting table
         document.querySelectorAll('.bet-option').forEach(option => {
             option.classList.remove('winning-number');
         });
