@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced 3D Roulette Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="roulette-container">
+        <canvas id="roulette-canvas"></canvas>
+        
+        <div id="game-info">
+            <h2>CASINO ROYALE</h2>
+            <div id="chips-display">Chips: 1000</div>
+            <div id="winning-number">Place your bets</div>
+            <div id="bet-info">Select a bet type</div>
+            <div id="result-message"></div>
+        </div>
+        
+        <div id="bet-controls">
+            <button id="decrease-bet">-</button>
+            <span id="bet-amount-display">10</span>
+            <button id="increase-bet">+</button>
+        </div>
+        
+        <!-- Pre-defined betting table with structured layout -->
+        <div id="betting-table">
+            <div class="betting-grid">
+                <div class="zero-section">
+                    <div class="bet-option" data-type="number" data-value="0">0</div>
+                </div>
+                <div class="numbers-grid">
+                    <div class="bet-option" data-type="number" data-value="3">3</div>
+                    <div class="bet-option" data-type="number" data-value="6">6</div>
+                    <div class="bet-option" data-type="number" data-value="9">9</div>
+                    <div class="bet-option" data-type="number" data-value="12">12</div>
+                    <div class="bet-option" data-type="number" data-value="15">15</div>
+                    <div class="bet-option" data-type="number" data-value="18">18</div>
+                    <div class="bet-option" data-type="number" data-value="21">21</div>
+                    <div class="bet-option" data-type="number" data-value="24">24</div>
+                    <div class="bet-option" data-type="number" data-value="27">27</div>
+                    <div class="bet-option" data-type="number" data-value="30">30</div>
+                    <div class="bet-option" data-type="number" data-value="33">33</div>
+                    <div class="bet-option" data-type="number" data-value="36">36</div>
+                    
+                    <div class="bet-option" data-type="number" data-value="2">2</div>
+                    <div class="bet-option" data-type="number" data-value="5">5</div>
+                    <div class="bet-option" data-type="number" data-value="8">8</div>
+                    <div class="bet-option" data-type="number" data-value="11">11</div>
+                    <div class="bet-option" data-type="number" data-value="14">14</div>
+                    <div class="bet-option" data-type="number" data-value="17">17</div>
+                    <div class="bet-option" data-type="number" data-value="20">20</div>
+                    <div class="bet-option" data-type="number" data-value="23">23</div>
+                    <div class="bet-option" data-type="number" data-value="26">26</div>
+                    <div class="bet-option" data-type="number" data-value="29">29</div>
+                    <div class="bet-option" data-type="number" data-value="32">32</div>
+                    <div class="bet-option" data-type="number" data-value="35">35</div>
+                    
+                    <div class="bet-option" data-type="number" data-value="1">1</div>
+                    <div class="bet-option" data-type="number" data-value="4">4</div>
+                    <div class="bet-option" data-type="number" data-value="7">7</div>
+                    <div class="bet-option" data-type="number" data-value="10">10</div>
+                    <div class="bet-option" data-type="number" data-value="13">13</div>
+                    <div class="bet-option" data-type="number" data-value="16">16</div>
+                    <div class="bet-option" data-type="number" data-value="19">19</div>
+                    <div class="bet-option" data-type="number" data-value="22">22</div>
+                    <div class="bet-option" data-type="number" data-value="25">25</div>
+                    <div class="bet-option" data-type="number" data-value="28">28</div>
+                    <div class="bet-option" data-type="number" data-value="31">31</div>
+                    <div class="bet-option" data-type="number" data-value="34">34</div>
+                </div>
+                <div class="outside-bets">
+                    <div class="bet-option" data-type="column" data-value="first">2:1</div>
+                    <div class="bet-option" data-type="column" data-value="second">2:1</div>
+                    <div class="bet-option" data-type="column" data-value="third">2:1</div>
+                    
+                    <div class="bet-option" data-type="range" data-value="low">1-18</div>
+                    <div class="bet-option" data-type="range" data-value="high">19-36</div>
+                    
+                    <div class="bet-option" data-type="parity" data-value="even">EVEN</div>
+                    <div class="bet-option" data-type="parity" data-value="odd">ODD</div>
+                    
+                    <div class="bet-option" data-type="color" data-value="red">RED</div>
+                    <div class="bet-option" data-type="color" data-value="black">BLACK</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <button id="spin-button">SPIN</button>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
